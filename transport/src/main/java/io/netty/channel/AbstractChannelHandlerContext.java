@@ -720,7 +720,7 @@ abstract class AbstractChannelHandlerContext extends DefaultAttributeMap impleme
         } else {
             int size = channel.estimatorHandle().size(msg);
             if (size > 0) {
-                ChannelOutboundBuffer buffer = channel.unsafe().outboundBuffer();
+                DefaultChannelOutboundBuffer buffer = (DefaultChannelOutboundBuffer) channel.unsafe().outboundBuffer();
                 // Check for null as it may be set to null if the channel is closed already
                 if (buffer != null) {
                     buffer.incrementPendingOutboundBytes(size);
@@ -915,7 +915,8 @@ abstract class AbstractChannelHandlerContext extends DefaultAttributeMap impleme
         public final void run() {
             try {
                 if (size > 0) {
-                    ChannelOutboundBuffer buffer = ctx.channel.unsafe().outboundBuffer();
+                    DefaultChannelOutboundBuffer buffer =
+                            (DefaultChannelOutboundBuffer) ctx.channel.unsafe().outboundBuffer();
                     // Check for null as it may be set to null if the channel is closed already
                     if (buffer != null) {
                         buffer.decrementPendingOutboundBytes(size);

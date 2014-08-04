@@ -52,7 +52,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
     private final Channel parent;
     private final long hashCode = ThreadLocalRandom.current().nextLong();
-    private final Unsafe unsafe;
+    private final AbstractUnsafe unsafe;
     private final DefaultChannelPipeline pipeline;
     private final ChannelFuture succeededFuture = new SucceededChannelFuture(this, null);
     private final VoidChannelPromise voidPromise = new VoidChannelPromise(this, true);
@@ -82,7 +82,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
     @Override
     public boolean isWritable() {
-        ChannelOutboundBuffer buf = unsafe.outboundBuffer();
+        DefaultChannelOutboundBuffer buf = unsafe.outboundBuffer();
         return buf != null && buf.getWritable();
     }
 
@@ -374,11 +374,11 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
      */
     protected abstract class AbstractUnsafe implements Unsafe {
 
-        private ChannelOutboundBuffer outboundBuffer =  new ChannelOutboundBuffer(AbstractChannel.this);
+        private DefaultChannelOutboundBuffer outboundBuffer =  new DefaultChannelOutboundBuffer(AbstractChannel.this);
         private boolean inFlush0;
 
         @Override
-        public final ChannelOutboundBuffer outboundBuffer() {
+        public final DefaultChannelOutboundBuffer outboundBuffer() {
             return outboundBuffer;
         }
 
@@ -543,7 +543,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
             }
 
             boolean wasActive = isActive();
-            ChannelOutboundBuffer outboundBuffer = this.outboundBuffer;
+            DefaultChannelOutboundBuffer outboundBuffer = this.outboundBuffer;
             this.outboundBuffer = null; // Disallow adding any messages and flushes to outboundBuffer.
 
             try {
@@ -638,7 +638,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
         @Override
         public void write(Object msg, ChannelPromise promise) {
-            ChannelOutboundBuffer outboundBuffer = this.outboundBuffer;
+            DefaultChannelOutboundBuffer outboundBuffer = this.outboundBuffer;
             if (outboundBuffer == null) {
                 // If the outboundBuffer is null we know the channel was closed and so
                 // need to fail the future right away. If it is not null the handling of the rest
@@ -654,7 +654,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
         @Override
         public void flush() {
-            ChannelOutboundBuffer outboundBuffer = this.outboundBuffer;
+            DefaultChannelOutboundBuffer outboundBuffer = this.outboundBuffer;
             if (outboundBuffer == null) {
                 return;
             }
@@ -669,7 +669,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
                 return;
             }
 
-            final ChannelOutboundBuffer outboundBuffer = this.outboundBuffer;
+            final DefaultChannelOutboundBuffer outboundBuffer = this.outboundBuffer;
             if (outboundBuffer == null || outboundBuffer.isEmpty()) {
                 return;
             }
